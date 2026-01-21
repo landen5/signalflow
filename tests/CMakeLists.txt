@@ -1,0 +1,3 @@
+add_executable(signalflow_tests main_test.cpp)
+
+target_link_libraries(signalflow_tests PRIVATE signalflow_lib)

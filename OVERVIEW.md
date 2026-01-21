@@ -1,0 +1,1 @@
+signalflow is a lightweight Digital Signal Processing library designed to run on resource-constrained hardware. It transforms raw accoustic data into optimized Mel Spectrograms for remote AI inference.
