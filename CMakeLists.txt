@@ -18,9 +18,16 @@ target_include_directories(signalflow_lib PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party> 
 )
 
-
-
 # Add compiler warnings and treat warnings as errors
 target_compile_options(signalflow_lib PRIVATE -Wall -Wextra -Wpedantic -Werror)
 
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/refs/heads/main.zip
+)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+enable_testing()
 add_subdirectory(tests)
