@@ -7,7 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Define the library 
 add_library(signalflow_lib STATIC # ensures library files are self-contained
-    src/buffer.cpp
     third_party/kiss_fft.c
     third_party/kiss_fftr.c
 )
@@ -31,3 +30,11 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 add_subdirectory(tests)
+
+# Demo app target
+add_executable(demo src/demo/main.cpp)
+target_link_libraries(demo PRIVATE signalflow_lib)
+target_include_directories(demo PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party
+)
