@@ -14,7 +14,14 @@ public:
 
     MelFilterBank(size_t n_fft, int sample_rate, size_t n_mels = 40, float f_min = 0.0f, float f_max = 8000.0f)
         : n_fft_(n_fft), sample_rate_(sample_rate), n_mels_(n_mels) {
-        
+        // Parameter validation
+        if (n_mels_ == 0) n_mels_ = 1; // Avoid zero mel bins
+        if (f_max <= f_min) {
+            // Swap or set to default range if invalid
+            f_min = 0.0f;
+            f_max = 8000.0f;
+        }
+
         // 1. Convert frequency boundaries to Mel scale
         float mel_min = hz_to_mel(f_min);
         float mel_max = hz_to_mel(f_max);
@@ -37,16 +44,18 @@ public:
         for (size_t m = 1; m <= n_mels_; ++m) {
             filters_[m-1].start_bin = bins[m-1];
             size_t filter_len = bins[m+1] - bins[m-1];
+            if (filter_len <= 0) filter_len = 1; // Avoid invalid vector size
             filters_[m-1].weights.resize(filter_len);
 
             for (int k = bins[m-1]; k < bins[m+1]; ++k) {
                 float weight = 0.0f;
                 if (k < bins[m]) {
-                    weight = static_cast<float>(k - bins[m-1]) / (bins[m] - bins[m-1]);
+                    weight = static_cast<float>(k - bins[m-1]) / (bins[m] - bins[m-1] + 1e-6f);
                 } else {
-                    weight = static_cast<float>(bins[m+1] - k) / (bins[m+1] - bins[m]);
+                    weight = static_cast<float>(bins[m+1] - k) / (bins[m+1] - bins[m] + 1e-6f);
                 }
-                filters_[m-1].weights[k - bins[m-1]] = weight;
+                if ((k - bins[m-1]) >= 0 && (size_t)(k - bins[m-1]) < filters_[m-1].weights.size())
+                    filters_[m-1].weights[k - bins[m-1]] = weight;
             }
         }
     }

@@ -38,6 +38,9 @@ namespace signalflow {
 
         // Acccess: Get the value at a specific index
         T at(size_t index) const {
+            if (index >= capacity_) {
+                throw std::out_of_range("CircularBuffer: index out of range");
+            }
             // Calculate pos by starting at head and going back 1 (to the latest),
             // then going back 'index' more steps. Add capacity_ to keep math positive
             size_t pos = (head_ + capacity_ - 1 - index) % capacity_;
